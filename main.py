@@ -8,7 +8,7 @@ import threading as thr
 
 
 def no_hexo_proj_tip():
-    console_error("当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。")
+    console_error("当前目录下似乎没有Hexo项目。请在切换到一个可用的Hexo项目目录。")
     showerror("没有Hexo项目",
               "当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。",
               parent=root,
@@ -94,38 +94,38 @@ def hexo_clean():
 
 # Tk配置与常量
 root = Tk()
-VERSION = "v1.0.2"
+VERSION = "v1.0.5"
 root.title(f"HexoGUI by MacrosMeng {VERSION}")
 root.geometry("400x500")
 root.resizable(False, False)
 
 # 控件配置
-title = Label(root, text="HexoGUI", font=("Verdana", 30, "bold"))
-subtitle = Label(root,
-                 text=f"来自MacrosMeng的适用于Hexo的GUI管理工具。版本: {VERSION}",
-                 font=("Microsoft YaHei UI", 10, "normal"))
-controls = Frame(root)
-console = Text(root, width=50, height=20, font=("Courier New", 10))
-console.tag_config("strong", background="#ffcccc", foreground="#ff2222")
+title = Label     (root, text="HexoGUI", font=("Verdana", 30, "bold"))
+subtitle = Label  (root,
+                   text=f"来自MacrosMeng的适用于Hexo的GUI管理工具。版本: {VERSION}",
+                   font=("Microsoft YaHei UI", 10, "normal"))
+controls = Frame  (root)
+console = Text    (root, width=50, height=20, font=("Courier New", 10))
+console.tag_config("strong", background="#ffcccc", foreground="#ff1111", font=("Courier New", 10, "bold"))
 console["state"] = "disabled"
-title.pack(padx=5, pady=(5, 0))
+title.pack   (padx=5, pady=(5, 0))
 subtitle.pack(padx=5, pady=0)
 controls.pack(padx=5, pady=0, expand=True, fill="both")
-console.pack(padx=5, pady=5, expand=True, fill="both")
-generate = Button(controls, text="生成", width=25, command=hexo_g)
-deploy = Button(controls, text="部署", width=25, command=hexo_d)
-preview = Button(controls, text="本地服务器预览", width=25, command=hexo_s)
-clean = Button(controls, text="清除缓存", width=25, command=hexo_clean)
-gen_deploy = Button(controls, text="生成并部署", width=50, command=hexo_g_d)
-change_dir = Button(controls, text="切换目录", width=50, command=ask_work_dir)
-exit_button = Button(controls, text="退出", width=50, command=root.quit)
-generate.grid(row=0, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
-deploy.grid(row=0, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
-preview.grid(row=1, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
-clean.grid(row=1, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
-gen_deploy.grid(row=2, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
-change_dir.grid(row=3, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
-exit_button.grid(row=4, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
+console.pack (padx=5, pady=5, expand=True, fill="both")
+generate = Button   (controls, text="💥生成💥",           width=25, command=hexo_g)
+deploy = Button     (controls, text="🖥部署🖥",            width=25, command=hexo_d)
+preview = Button    (controls, text="📰本地服务器预览📰‍", width=25, command=hexo_s)
+clean = Button      (controls, text="🧹清除缓存🧹",       width=25, command=hexo_clean)
+gen_deploy = Button (controls, text="✅生成并部署✅",     width=50, command=hexo_g_d)
+change_dir = Button (controls, text="📁切换目录📁",       width=25, command=ask_work_dir)
+exit_button = Button(controls, text="❌退出❌",           width=25, command=root.quit)
+generate.grid   (row=0, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+deploy.grid     (row=0, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+preview.grid    (row=1, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+clean.grid      (row=1, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+gen_deploy.grid (row=2, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
+change_dir.grid (row=3, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+exit_button.grid(row=3, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
 
 # 启动时的欢迎信息
 console_info("HexoGUI已启动，这里将会显示Hexo的命令行输出与HexoGUI的日志信息。\n")
