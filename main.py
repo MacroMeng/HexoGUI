@@ -6,6 +6,9 @@ from tkinter.filedialog import *
 import subprocess
 import threading as thr
 
+import sv_ttk
+import darkdetect as darkd
+
 
 def no_hexo_proj_tip():
     console_error("当前目录下似乎没有Hexo项目。请在切换到一个可用的Hexo项目目录。")
@@ -19,10 +22,12 @@ def ask_work_dir():
     try:
         fn = askdirectory(title="选择Hexo项目目录", initialdir=".")
         if not fn:
+            console_error("没有选择目录。将以HexoGUI所在目录作为Hexo项目目录。")
             showerror("没有选择目录", "您没有选择任何目录。将以HexoGUI所在目录作为Hexo项目目录。")
             fn = "."
         os.chdir(fn)
     except OSError as exc:
+        console_error(f"无法打开目录: {exc}")
         showerror("无效文件夹", "您没有提供一个有效的文件夹。将以HexoGUI所在目录作为Hexo项目目录。")
     finally:
         console_info(f"已切换到Hexo项目目录: {os.getcwd()}")
@@ -135,4 +140,5 @@ showinfo("欢迎使用HexoGUI",
          parent=root)
 ask_work_dir()
 
+sv_ttk.set_theme(darkd.theme())
 root.mainloop()
