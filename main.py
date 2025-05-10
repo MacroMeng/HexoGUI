@@ -4,6 +4,7 @@ from tkinter.ttk import *
 from tkinter.messagebox import *
 from tkinter.filedialog import *
 import subprocess
+import threading as thr
 
 
 def no_hexo_proj_tip():
@@ -29,14 +30,14 @@ def ask_work_dir():
 
 def console_info(text):
     console["state"] = "normal"
-    console.insert(END, text+"\n")
+    console.insert(END, text + "\n")
     console.see(END)
     console["state"] = "disabled"
 
 
 def console_error(text):
     console["state"] = "normal"
-    console.insert(END, text+"\n", "strong")
+    console.insert(END, text + "\n", "strong")
     console.see(END)
     console["state"] = "disabled"
 
@@ -70,16 +71,13 @@ def hexo_g_d():
 
 
 def hexo_s():
-    runner = subprocess.run(["cmd", "/r", "start", "cmd", "/r", "hexo", "s"], capture_output=True, text=True)
-    output = runner.stdout
-    if output.startswith("Usage:"):
-        no_hexo_proj_tip()
-        return
-    elif runner.returncode == 0:
-        console_info("[本地服务器已启动]" + output)
-    else:
-        console_error("[本地服务器启动失败]" + output)
-        return
+    thr.Thread(target=lambda: showinfo("本地服务器正在启动",
+                                       "Hexo本地服务器正在启动，"
+                                       "待命令行窗口打开后你就可以在浏览器中访问http://localhost:4000预览你的网站。",
+                                       detail="你可以通过在打开的命令行窗口中按下Ctrl+C来停止本地服务器。\n"
+                                              "如果无法打开该网址，或是命令行窗口一闪而过或根本不显示，请检查你的网络设置。",
+                                       parent=root)).start()
+    thr.Thread(target=lambda: os.system("start hexo s")).start()
 
 
 def hexo_clean():
@@ -102,32 +100,32 @@ root.geometry("400x500")
 root.resizable(False, False)
 
 # 控件配置
-title = Label     (root, text="HexoGUI", font=("Verdana", 30, "bold"))
-subtitle = Label  (root,
-                   text=f"来自MacrosMeng的适用于Hexo的GUI管理工具。版本: {VERSION}",
-                   font=("Microsoft YaHei UI", 10, "normal"))
-controls = Frame  (root)
-console = Text    (root, width=50, height=20, font=("Courier New", 10))
+title = Label(root, text="HexoGUI", font=("Verdana", 30, "bold"))
+subtitle = Label(root,
+                 text=f"来自MacrosMeng的适用于Hexo的GUI管理工具。版本: {VERSION}",
+                 font=("Microsoft YaHei UI", 10, "normal"))
+controls = Frame(root)
+console = Text(root, width=50, height=20, font=("Courier New", 10))
 console.tag_config("strong", background="#ffcccc", foreground="#ff2222")
 console["state"] = "disabled"
-title.pack   (padx=5, pady=(5, 0))
+title.pack(padx=5, pady=(5, 0))
 subtitle.pack(padx=5, pady=0)
 controls.pack(padx=5, pady=0, expand=True, fill="both")
-console.pack (padx=5, pady=5, expand=True, fill="both")
-generate = Button   (controls, text="生成",           width=25, command=hexo_g)
-deploy = Button     (controls, text="部署",           width=25, command=hexo_d)
-preview = Button    (controls, text="本地服务器预览", width=25, command=hexo_s)
-clean = Button      (controls, text="清除缓存",       width=25, command=hexo_clean)
-gen_deploy = Button (controls, text="生成并部署",     width=50, command=hexo_g_d)
-change_dir = Button (controls, text="切换目录",       width=50, command=ask_work_dir)
-exit_button = Button(controls, text="退出",           width=50, command=root.quit)
-generate.grid   (row=0, column=0, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
-deploy.grid     (row=0, column=1, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
-preview.grid    (row=1, column=0, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
-clean.grid      (row=1, column=1, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
-gen_deploy.grid (row=2, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
-change_dir.grid (row=3, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
-exit_button.grid(row=4, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
+console.pack(padx=5, pady=5, expand=True, fill="both")
+generate = Button(controls, text="生成", width=25, command=hexo_g)
+deploy = Button(controls, text="部署", width=25, command=hexo_d)
+preview = Button(controls, text="本地服务器预览", width=25, command=hexo_s)
+clean = Button(controls, text="清除缓存", width=25, command=hexo_clean)
+gen_deploy = Button(controls, text="生成并部署", width=50, command=hexo_g_d)
+change_dir = Button(controls, text="切换目录", width=50, command=ask_work_dir)
+exit_button = Button(controls, text="退出", width=50, command=root.quit)
+generate.grid(row=0, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+deploy.grid(row=0, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+preview.grid(row=1, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+clean.grid(row=1, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
+gen_deploy.grid(row=2, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
+change_dir.grid(row=3, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
+exit_button.grid(row=4, column=0, columnspan=2, sticky=N + W + E, ipadx=5, ipady=5)
 
 # 启动时的欢迎信息
 console_info("HexoGUI已启动，这里将会显示Hexo的命令行输出与HexoGUI的日志信息。\n")
@@ -136,6 +134,5 @@ showinfo("欢迎使用HexoGUI",
          "接下来，请在文件夹选择窗口中选中你的Hexo项目目录。",
          parent=root)
 ask_work_dir()
-
 
 root.mainloop()
