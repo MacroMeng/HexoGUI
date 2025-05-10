@@ -1,48 +1,114 @@
+import os
 from tkinter import *
 from tkinter.ttk import *
+from tkinter.messagebox import *
+from tkinter.filedialog import *
 import subprocess
 
 
-def insert_to_console(text):
-    console.insert(END, text)
+def ask_work_dir():
+    try:
+        fn = askdirectory(title="选择Hexo项目目录", initialdir=".")
+        if not fn:
+            showerror("没有选择目录", "您没有选择任何目录。将以HexoGUI所在目录作为Hexo项目目录。")
+            fn = "."
+        os.chdir(fn)
+    except OSError as exc:
+        showerror("无效文件夹", "您没有提供一个有效的文件夹。将以HexoGUI所在目录作为Hexo项目目录。")
+    finally:
+        console_info(f"已切换到Hexo项目目录: {os.getcwd()}")
+
+
+def console_info(text):
+    console.insert(END, text+"\n")
+    console.see(END)
+
+
+def console_error(text):
+    console.insert(END, text+"\n", "strong")
     console.see(END)
 
 
 def hexo_g():
-    runner = subprocess.run(["hexo", "generate"], capture_output=True, text=True)
+    runner = subprocess.run(["cmd", "/r", "hexo", "g"], capture_output=True, text=True)
     output = runner.stdout
-    if runner.returncode == 0:
-        insert_to_console("[成功生成]")
-        insert_to_console(output)
+    if output.startswith("Usage:"):
+        console_error("当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。")
+        showerror("没有Hexo项目",
+                  "当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。",
+                  parent=root,
+                  detail="你可以在Hexo官方网站(Hexo.io)找到关于“创建Hexo项目”的教程。")
+        return
+    elif runner.returncode == 0:
+        console_info("[生成成功]" + output)
     else:
-        pass
+        console_error("[生成失败]" + output)
+        return
 
 
+def hexo_d():
+    runner = subprocess.run(["cmd", "/r", "hexo", "d"], capture_output=True, text=True)
+    output = runner.stdout
+    if output.startswith("Usage:"):
+        console_error("当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。")
+        showerror("没有Hexo项目",
+                  "当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。",
+                  parent=root,
+                  detail="你可以在Hexo官方网站(Hexo.io)找到关于“创建Hexo项目”的教程。")
+        return
+    elif runner.returncode == 0:
+        console_info("[部署成功]" + output)
+    else:
+        console_error("[部署失败]" + output)
+        return
+
+
+def hexo_g_d():
+    hexo_g()
+    hexo_d()
+
+
+# Tk配置与常量
 root = Tk()
 VERSION = "v1.0.2"
 root.title(f"HexoGUI by MacrosMeng {VERSION}")
-root.geometry("400x350")
+root.geometry("400x500")
 root.resizable(False, False)
 
-title = Label(root, text="HexoGUI", font=("Verdana", 30, "bold"))
-title.pack(padx=5, pady=(5, 0))
-subtitle = Label(root, text=f"适用于Hexo的GUI管理工具。版本: {VERSION}", font=("Microsoft YaHei UI", 10, "normal"))
+# 控件配置
+title = Label     (root, text="HexoGUI", font=("Verdana", 30, "bold"))
+subtitle = Label  (root,
+                   text=f"来自MacrosMeng的适用于Hexo的GUI管理工具。版本: {VERSION}",
+                   font=("Microsoft YaHei UI", 10, "normal"))
+controls = Frame  (root)
+console = Text    (root, width=50, height=20, font=("Courier New", 10))
+console.tag_config("strong", background="#ffcccc", foreground="#ff2222")
+title.pack   (padx=5, pady=(5, 0))
 subtitle.pack(padx=5, pady=0)
-controls = Frame(root)
-controls.pack(padx=5, expand=True, fill="both")
-generate = Button(controls, text="生成", width=25, command=hexo_g)
-generate.grid(row=0, column=0, sticky=N+W+E, ipadx=5, ipady=5)
-deploy = Button(controls, text="部署", width=25)
-deploy.grid(row=0, column=1, sticky=N+W+E, ipadx=5, ipady=5)
-gen_deploy = Button(controls, text="生成并部署", width=50)
-gen_deploy.grid(row=1, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
-preview = Button(controls, text="本地预览", width=50)
-preview.grid(row=2, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
-clean = Button(controls, text="清除缓存", width=50)
-clean.grid(row=3, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
-console = Text(root, width=50, height=20, font=("Courier New", 12))
-console.pack(padx=5, pady=5, expand=True, fill="both")
-insert_to_console("HexoGUI已启动，这里将会显示Hexo的命令行输出。")
+controls.pack(padx=5, pady=0, expand=True, fill="both")
+console.pack (padx=5, pady=5, expand=True, fill="both")
+generate = Button   (controls, text="生成",       width=25, command=hexo_g)
+deploy = Button     (controls, text="部署",       width=25)
+preview = Button    (controls, text="本地预览",   width=25)
+clean = Button      (controls, text="清除缓存",   width=25)
+gen_deploy = Button (controls, text="生成并部署", width=50)
+change_dir = Button (controls, text="切换目录",   width=50, command=ask_work_dir)
+exit_button = Button(controls, text="退出",       width=50, command=root.quit)
+generate.grid   (row=0, column=0, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
+deploy.grid     (row=0, column=1, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
+preview.grid    (row=1, column=0, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
+clean.grid      (row=1, column=1, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
+gen_deploy.grid (row=2, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
+change_dir.grid (row=3, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
+exit_button.grid(row=4, column=0, columnspan=2, sticky=N+W+E, ipadx=5, ipady=5)
+
+# 启动时的欢迎信息
+console_info("HexoGUI已启动，这里将会显示Hexo的命令行输出与HexoGUI的日志信息。\n")
+showinfo("欢迎使用HexoGUI",
+         "HexoGUI是一个适用于Hexo的GUI管理工具。你可以在这里完成Hexo的一些常用操作。\n"
+         "接下来，请在文件夹选择窗口中选中你的Hexo项目目录。",
+         parent=root)
+ask_work_dir()
 
 
 root.mainloop()
