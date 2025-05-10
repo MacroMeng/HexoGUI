@@ -6,6 +6,14 @@ from tkinter.filedialog import *
 import subprocess
 
 
+def no_hexo_proj_tip():
+    console_error("当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。")
+    showerror("没有Hexo项目",
+              "当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。",
+              parent=root,
+              detail="你可以在Hexo官方网站(Hexo.io)找到关于“创建Hexo项目”的教程。")
+
+
 def ask_work_dir():
     try:
         fn = askdirectory(title="选择Hexo项目目录", initialdir=".")
@@ -20,24 +28,24 @@ def ask_work_dir():
 
 
 def console_info(text):
+    console["state"] = "normal"
     console.insert(END, text+"\n")
     console.see(END)
+    console["state"] = "disabled"
 
 
 def console_error(text):
+    console["state"] = "normal"
     console.insert(END, text+"\n", "strong")
     console.see(END)
+    console["state"] = "disabled"
 
 
 def hexo_g():
     runner = subprocess.run(["cmd", "/r", "hexo", "g"], capture_output=True, text=True)
     output = runner.stdout
     if output.startswith("Usage:"):
-        console_error("当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。")
-        showerror("没有Hexo项目",
-                  "当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。",
-                  parent=root,
-                  detail="你可以在Hexo官方网站(Hexo.io)找到关于“创建Hexo项目”的教程。")
+        no_hexo_proj_tip()
         return
     elif runner.returncode == 0:
         console_info("[生成成功]" + output)
@@ -50,22 +58,40 @@ def hexo_d():
     runner = subprocess.run(["cmd", "/r", "hexo", "d"], capture_output=True, text=True)
     output = runner.stdout
     if output.startswith("Usage:"):
-        console_error("当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。")
-        showerror("没有Hexo项目",
-                  "当前目录下似乎没有Hexo项目。请在打开时选择可用的Hexo项目目录。",
-                  parent=root,
-                  detail="你可以在Hexo官方网站(Hexo.io)找到关于“创建Hexo项目”的教程。")
+        no_hexo_proj_tip()
         return
-    elif runner.returncode == 0:
-        console_info("[部署成功]" + output)
     else:
-        console_error("[部署失败]" + output)
-        return
+        console_info("[部署操作完成]" + output)
 
 
 def hexo_g_d():
     hexo_g()
     hexo_d()
+
+
+def hexo_s():
+    runner = subprocess.run(["cmd", "/r", "start", "cmd", "/r", "hexo", "s"], capture_output=True, text=True)
+    output = runner.stdout
+    if output.startswith("Usage:"):
+        no_hexo_proj_tip()
+        return
+    elif runner.returncode == 0:
+        console_info("[本地服务器已启动]" + output)
+    else:
+        console_error("[本地服务器启动失败]" + output)
+        return
+
+
+def hexo_clean():
+    runner = subprocess.run(["cmd", "/r", "hexo", "clean"], capture_output=True, text=True)
+    output = runner.stdout
+    if output.startswith("Usage:"):
+        no_hexo_proj_tip()
+        return
+    elif runner.returncode == 0:
+        console_info("[缓存清除成功]" + output)
+    else:
+        console_error("[缓存清除失败]" + output)
 
 
 # Tk配置与常量
@@ -83,17 +109,18 @@ subtitle = Label  (root,
 controls = Frame  (root)
 console = Text    (root, width=50, height=20, font=("Courier New", 10))
 console.tag_config("strong", background="#ffcccc", foreground="#ff2222")
+console["state"] = "disabled"
 title.pack   (padx=5, pady=(5, 0))
 subtitle.pack(padx=5, pady=0)
 controls.pack(padx=5, pady=0, expand=True, fill="both")
 console.pack (padx=5, pady=5, expand=True, fill="both")
-generate = Button   (controls, text="生成",       width=25, command=hexo_g)
-deploy = Button     (controls, text="部署",       width=25)
-preview = Button    (controls, text="本地预览",   width=25)
-clean = Button      (controls, text="清除缓存",   width=25)
-gen_deploy = Button (controls, text="生成并部署", width=50)
-change_dir = Button (controls, text="切换目录",   width=50, command=ask_work_dir)
-exit_button = Button(controls, text="退出",       width=50, command=root.quit)
+generate = Button   (controls, text="生成",           width=25, command=hexo_g)
+deploy = Button     (controls, text="部署",           width=25, command=hexo_d)
+preview = Button    (controls, text="本地服务器预览", width=25, command=hexo_s)
+clean = Button      (controls, text="清除缓存",       width=25, command=hexo_clean)
+gen_deploy = Button (controls, text="生成并部署",     width=50, command=hexo_g_d)
+change_dir = Button (controls, text="切换目录",       width=50, command=ask_work_dir)
+exit_button = Button(controls, text="退出",           width=50, command=root.quit)
 generate.grid   (row=0, column=0, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
 deploy.grid     (row=0, column=1, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
 preview.grid    (row=1, column=0, columnspan=1, sticky=N+W+E, ipadx=5, ipady=5)
