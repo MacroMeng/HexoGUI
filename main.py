@@ -117,13 +117,13 @@ title.pack   (padx=5, pady=(5, 0))
 subtitle.pack(padx=5, pady=0)
 controls.pack(padx=5, pady=0, expand=True, fill="both")
 console.pack (padx=5, pady=5, expand=True, fill="both")
-generate = Button   (controls, text="💥生成💥",           width=25, command=hexo_g)
-deploy = Button     (controls, text="🖥部署🖥",            width=25, command=hexo_d)
-preview = Button    (controls, text="📰本地服务器预览📰‍", width=25, command=hexo_s)
-clean = Button      (controls, text="🧹清除缓存🧹",       width=25, command=hexo_clean)
-gen_deploy = Button (controls, text="✅生成并部署✅",     width=50, command=hexo_g_d)
-change_dir = Button (controls, text="📁切换目录📁",       width=25, command=ask_work_dir)
-exit_button = Button(controls, text="❌退出❌",           width=25, command=root.quit)
+generate = Button   (controls, text="💥生成💥",           width=20, command=hexo_g)
+deploy = Button     (controls, text="🖥部署🖥",            width=20, command=hexo_d)
+preview = Button    (controls, text="📰本地服务器预览📰‍", width=20, command=hexo_s)
+clean = Button      (controls, text="🧹清除缓存🧹",       width=20, command=hexo_clean)
+gen_deploy = Button (controls, text="✅生成并部署✅",     width=40, command=hexo_g_d)
+change_dir = Button (controls, text="📁切换目录📁",       width=20, command=ask_work_dir)
+exit_button = Button(controls, text="❌退出❌",           width=20, command=root.quit)
 generate.grid   (row=0, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
 deploy.grid     (row=0, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
 preview.grid    (row=1, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
@@ -133,6 +133,7 @@ change_dir.grid (row=3, column=0, columnspan=1, sticky=N + W + E, ipadx=5, ipady
 exit_button.grid(row=3, column=1, columnspan=1, sticky=N + W + E, ipadx=5, ipady=5)
 
 # 启动时的欢迎信息
+sv_ttk.set_theme(darkd.theme())
 console_info("HexoGUI已启动，这里将会显示Hexo的命令行输出与HexoGUI的日志信息。\n")
 showinfo("欢迎使用HexoGUI",
          "HexoGUI是一个适用于Hexo的GUI管理工具。你可以在这里完成Hexo的一些常用操作。\n"
@@ -140,5 +141,5 @@ showinfo("欢迎使用HexoGUI",
          parent=root)
 ask_work_dir()
 
-sv_ttk.set_theme(darkd.theme())
+
 root.mainloop()
