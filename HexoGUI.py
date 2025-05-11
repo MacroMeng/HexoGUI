@@ -135,7 +135,10 @@ VERSION = "v1.0.0R"
 root.title(f"HexoGUI by MacrosMeng {VERSION}")
 root.geometry("400x500")
 root.resizable(False, False)
-root.iconbitmap("ICOs.ico")
+try:
+    root.iconbitmap("ICOs.ico")
+except TclError:
+    pass  # 使用EXE文件时有时出现无法使用图标情况，故抑制。
 if os.name == "nt":
     pyglet.options['win32_gdi_font'] = True
     pyglet.font.add_file("./HarmonyOS_Sans_SC_Regular.ttf")
