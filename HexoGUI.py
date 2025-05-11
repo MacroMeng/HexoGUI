@@ -141,10 +141,15 @@ except TclError:
     pass  # 使用EXE文件时有时出现无法使用图标情况，故抑制。
 if os.name == "nt":
     pyglet.options['win32_gdi_font'] = True
-    pyglet.font.add_file("./HarmonyOS_Sans_SC_Regular.ttf")
-    pyglet.font.add_file("./JetBrainsMapleMono-Regular.ttf")
-    fontname = "HarmonyOS Sans SC"
-    mono_fontname = "JetBrains Maple Mono"
+    try:
+        pyglet.font.add_file("./HarmonyOS_Sans_SC_Regular.ttf")
+        pyglet.font.add_file("./JetBrainsMapleMono-Regular.ttf")
+    except FileNotFoundError:
+        fontname = "Noto Sans SC"
+        mono_fontname = "Menlo"  # 使用EXE文件时有时出现无法使用字体情况，故抑制。
+    else:
+        fontname = "HarmonyOS Sans SC"
+        mono_fontname = "JetBrains Maple Mono"
 else:
     fontname = "Noto Sans SC"
     mono_fontname = "Menlo"
