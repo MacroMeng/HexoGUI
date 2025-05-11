@@ -7,6 +7,7 @@ from tkinter.filedialog import *
 import subprocess
 import threading as thr
 
+import pyglet
 import sv_ttk
 import darkdetect as darkd
 
@@ -118,13 +119,13 @@ def new_note():
     newer.title("新建文章")
     newer.geometry("400x200")
     newer.resizable(False, False)
-    title_newer = Label(newer, text="新建Hexo文章", font=("Noto Sans SC", 30, "bold"))
+    title_newer = Label(newer, text="新建Hexo文章", font=(fontname, 30, "bold"))
     title_newer.pack(padx=5, pady=5, side="top")
     go = Button(newer, text="创建", command=create, width=50)
     go.pack(padx=5, pady=5, side="bottom")
-    title_label = Label(newer, text="文章标题：", font=("Noto Sans SC", 18, "normal"))
+    title_label = Label(newer, text="文章标题：", font=(fontname, 18, "normal"))
     title_label.pack(padx=5, pady=5, side="left")
-    title_entry = Entry(newer, font=("Noto Sans SC",))
+    title_entry = Entry(newer, font=(fontname,))
     title_entry.pack(padx=5, pady=5, side="right")
 
 
@@ -134,17 +135,27 @@ VERSION = "v1.0.0R"
 root.title(f"HexoGUI by MacrosMeng {VERSION}")
 root.geometry("400x500")
 root.resizable(False, False)
+root.iconbitmap("ICOs.ico")
+if os.name == "nt":
+    pyglet.options['win32_gdi_font'] = True
+    pyglet.font.add_file("./HarmonyOS_Sans_SC_Regular.ttf")
+    pyglet.font.add_file("./JetBrainsMapleMono-Regular.ttf")
+    fontname = "HarmonyOS Sans SC"
+    mono_fontname = "JetBrains Maple Mono"
+else:
+    fontname = "Noto Sans SC"
+    mono_fontname = "Menlo"
 
 # 控件配置
-title = Label     (root, text="HexoGUI", font=("Noto Sans SC", 30, "bold"))
+title = Label     (root, text="HexoGUI", font=(fontname, 30, "bold"))
 subtitle = Label  (root,
                    text=f"适用于Hexo的简约、轻量化的GUI管理工具\n"
                         f"版本: {VERSION} | Made by ⚡MacrosMeng⚡",
-                   font=("Noto Sans SC", 10, "normal"),
+                   font=(fontname, 10, "normal"),
                    justify="center")
 controls = Frame  (root)
-console = Text    (root, width=50, height=20, font=("Courier New", 10))
-console.tag_config("strong", background="#ffcccc", foreground="#ff1111", font=("Courier New", 10, "bold"))
+console = Text    (root, width=50, height=20, font=(mono_fontname, 10))
+console.tag_config("strong", background="#ffcccc", foreground="#ff1111", font=(mono_fontname, 10, "bold"))
 console["state"] = "disabled"
 title.pack   (padx=5, pady=(5, 0))
 subtitle.pack(padx=5, pady=0)
