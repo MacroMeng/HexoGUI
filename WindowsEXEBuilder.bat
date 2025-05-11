@@ -9,5 +9,5 @@ pyinstaller HexoGUI.py ^
             --collect-all darkdetect ^
             --splash "loading.png" ^
             --noconsole ^
-            --icon ICONs.ico
+            --icon ICOs.ico
 @pause
